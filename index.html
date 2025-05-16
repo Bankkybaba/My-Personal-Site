@@ -1,33 +1,22 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>About Me</title>
-  </head>
-  <body>
-    <h1>Hello, I'm Joshua!</h1>
-    <p>This is my personal website.</p>
+<script>
+  fetch("https://api.ipify.org?format=json")
+    .then((response) => response.json())
+    .then((data) => {
+      const currentTime = new Date().toLocaleString();
 
-    <script>
-      // Get visitor's IP address
-      fetch("https://api.ipify.org?format=json")
-        .then((response) => response.json())
-        .then((data) => {
-          // Now submit the IP address to FormSubmit
-          fetch("https://formsubmit.co/ajax/theafricannovella@gmail.com", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json"
-            },
-            body: JSON.stringify({
-              message: "Visitor IP: " + data.ip
-            })
-          })
-          .then(res => res.json())
-          .then(result => console.log("Sent IP to email:", result))
-          .catch(error => console.error("Error:", error));
-        });
-    </script>
-  </body>
-</html>
-Updated to fix IP sending
+      fetch("https://formsubmit.co/ajax/theafricannovella@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          message: `Visitor IP: ${data.ip} at ${currentTime}`
+        })
+      })
+      .then(res => res.json())
+      .then(result => console.log("IP sent:", result))
+      .catch(error => console.error("Error:", error));
+    });
+</script>
+
